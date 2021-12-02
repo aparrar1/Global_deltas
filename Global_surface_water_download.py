@@ -171,11 +171,14 @@ def mosaic_construction(input_directory, filename):
         new_dataset.write(array_out)
         new_dataset.close()
 
-def extract_water_persistence(shp_file, raster_file):
+def extract_water_persistence(shp_file, raster_file): #future fixes!! add loops for files that are too large
     # Read points from shapefile
-    lidar_points = gpd.read_file(shp_file)
-    coords = [(x,y) for x, y in zip(lidar_points.geometry.x, lidar_points.geometry.y)]
-
+    if '.shp' in shp_file or '.json' in shp_file:
+        lidar_points = gpd.read_file(shp_file)
+        coords = [(x,y) for x, y in zip(lidar_points.geometry.x, lidar_points.geometry.y)]
+    else:
+        lidar_points = pd.read_csv(shp_file)
+        coords = [(x,y) for x, y in zip(lidar_points.Lon, lidar_points.Lat)]
     # Open the Landsat water persistence raster 
     water_persistence = rasterio.open(raster_file)  
     # Sample the raster at every point location and store values in a DataFrame
