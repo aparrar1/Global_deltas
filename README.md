@@ -3,11 +3,13 @@ Code for GEDI, ICESat GLAS and ICESat2 ATLAS data processing, for the Global Del
 
 This code defines functions for creating a workflow for querying, downloading, and subsetting GEDI and ICESat data
 This code was based on publicly available code and resources.
-Original code:
+
+# Original code:
     ICESat query and download: Download script from the NSIDC webpage. Example: https://nsidc.org/data/GLAH06/versions/34 in 'download data' click in 'Download script'.
     GEDI query: GEDI finder web service https://lpdaacsvc.cr.usgs.gov/services/gedifinder
     GEDI subsetting: GEDI_Subsetter.py code by Cole Krehbiel https://git.earthdata.nasa.gov/projects/LPDUR/repos/gedi-subsetter/browse/GEDI_Subsetter.py 
     Earth Data login setup code EarthdataLoginSetup.py created by Cole Krehbiel https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_python/browse/EarthdataLoginSetup.py
+# Datasets information
 #GEDI L2 data
 GEDI L2 Elevation and Height Metrics Data short name is GEDI02_A and GEDI02_B. there are 2 versions available 001 and 002
 The data_group for GEDI are any of the BEAM names ['BEAM0000', 'BEAM0001', 'BEAM0010', 'BEAM0011', 'BEAM0101', 'BEAM0110', 'BEAM1000', 'BEAM1011']
