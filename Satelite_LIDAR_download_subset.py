@@ -324,6 +324,9 @@ def GEDI_group_process(file1Name,b,file1, file1SDS, sdsSubset,ROI):
     geoDF2 = geoDF.copy()
     geoDF = gp.GeoDataFrame(geoDF2, geometry=gp.points_from_xy(geoDF2.Lon, geoDF2.Lat))
     geoDF.crs='EPSG:4326'
+    #Further filter the data according to variables noDetectMod and degradeFlg. All points should at least have one return, and the points should have been taken during a non degraded period.
+    geoDF=geoDF[geoDF.noDetctMod>0]
+    geoDF=geoDF[geoDF.degradeFlg==0]
     # Clip to only include points within the user-defined bounding box
     geoDF = geoDF[geoDF['geometry'].within(ROI.geometry[0].envelope)]
     return(geoDF)
@@ -560,16 +563,18 @@ def ATLAS03_group_process(file1Name, b,file1, file1SDS, sdsSubset,ROI):
     ph_ndx = [l for l in part2 if 'ph_index_beg' in l][0]  
     ph_count = [l for l in part2 if 'segment_ph_cnt' in l][0]
     rgt = 'orbit_info/rgt'
+    sc_orient = 'orbit_info/sc_orient'
     seg_id= [l for l in part2 if 'segment_id' in l][0]
     # Open the photon index begining and the photon count per segment
     ph_index = file1[ph_ndx][()]
     counts = file1[ph_count][()]
     rgts= file1[rgt][()]
+    sc_orients= file1[sc_orient][()]
     seg_ids = file1[seg_id][()]    
 
     #create a separate data frame with the reference ground track, the segment id, the photon index beginning and end
-    geoDF = pd.DataFrame({'rgt':[rgts[0]]*len(ph_index),'segm_id':seg_ids,'index_beg':ph_index, 'index_end':ph_index+counts-1, 'ph_count':counts})
-    del ph_index, counts, rgts, seg_ids
+    geoDF = pd.DataFrame({'rgt':[rgts[0]]*len(ph_index),'sc_orient':[sc_orients[0]]*len(ph_index),'segm_id':seg_ids,'index_beg':ph_index, 'index_end':ph_index+counts-1, 'ph_count':counts})
+    del ph_index, counts, rgts, seg_ids, sc_orients
     part2=[s for s in part2 if not any(s.endswith(d) for d in ['ph_index_beg','segment_ph_cnt','segment_id'])]
      
     for s in part2:
@@ -631,7 +636,7 @@ def ATLAS03_group_process(file1Name, b,file1, file1SDS, sdsSubset,ROI):
     # Convert lat/lon coordinates to shapely points
     finalDF = gp.GeoDataFrame(finalDF, geometry=gp.points_from_xy(finalDF.Lon, finalDF.Lat))
     finalDF.crs='EPSG:4326'
-    #Further filter the data according to quality flags quality_ph and the the signal_conf_ph
+    #Further filter the data according to quality flags quality_ph and the signal_conf_ph
     #Only use values with quality_ph==0 (nominal) and Events associated with the land surface type high confidence
     finalDF=finalDF[finalDF.quality_ph==0]
     finalDF=finalDF[finalDF.surfType_0==1]
@@ -671,12 +676,11 @@ def HDF5_data_subset(ROI_file,input_file,output_directory,data_group ='',layerSu
                   '/land_cover_data/modis_treecover','/land_cover_data/pft_class', '/land_cover_data/urban_proportion']   
 #GEDI L2B product    
     l2bSubset = ['/geolocation/lat_lowestmode', '/geolocation/lon_lowestmode', '/channel', '/geolocation/shot_number','/geolocation/delta_time',
-                 '/geolocation/digital_elevation_model', '/geolocation/elev_highestreturn','/geolocation/elev_lowestmode','/geolocation/elevation_bin0',
-                 '/geolocation/elevation_bin0_error','/geolocation/elevation_lastbin', '/geolocation/elevation_lastbin_error','/geolocation/height_bin0','/geolocation/height_lastbin', 
-                 '/cover', '/fhd_normal','/omega', '/pai', '/rhov',  '/rhog', '/rh100',
+                 '/geolocation/digital_elevation_model', '/geolocation/elev_highestreturn','/geolocation/elev_lowestmode',
+                 '/cover', '/fhd_normal','/omega', '/pai',
                  '/land_cover_data/landsat_treecover', '/land_cover_data/landsat_water_persistence', '/land_cover_data/leaf_off_flag', '/land_cover_data/modis_nonvegetated', 
                  '/land_cover_data/modis_treecover', '/land_cover_data/pft_class', '/land_cover_data/urban_proportion',
-                 '/algorithmrun_flag','/num_detectedmodes','/selected_rg_algorithm','/l2a_quality_flag', '/l2b_quality_flag',  '/sensitivity',  
+                 '/algorithmrun_flag','/num_detectedmodes','/selected_rg_algorithm', '/l2b_quality_flag',  '/sensitivity',  
                  '/stale_return_flag', '/surface_flag', '/geolocation/degrade_flag',  '/geolocation/solar_elevation']
 #ICESat GLAS products
     GLASSubset = ['/Geolocation/d_lat', '/Geolocation/d_lon', '/Time/i_rec_ndx','/Time/i_shot_count',
@@ -693,7 +697,7 @@ def HDF5_data_subset(ROI_file,input_file,output_directory,data_group ='',layerSu
                    '/land_segments/dem_flag','/land_segments/dem_h','/land_segments/dem_removal_flag','/land_segments/h_dif_ref','/land_segments/layer_flag',
                    '/land_segments/msw_flag','/land_segments/n_seg_ph','/land_segments/night_flag','/land_segments/ph_removal_flag',
                    '/land_segments/sat_flag','/land_segments/segment_landcover','/land_segments/segment_snowcover','/land_segments/segment_watermask',
-                   '/land_segments/snr','/land_segments/surf_type','/land_segments/terrain_flg','/land_segments/urban_flag',
+                   '/land_segments/snr','/land_segments/terrain_flg','/land_segments/urban_flag',
                     '/land_segments/canopy/canopy_flag','/land_segments/canopy/canopy_openness','/land_segments/canopy/h_canopy',
                     '/land_segments/canopy/h_canopy_abs','/land_segments/canopy/h_canopy_uncertainty','/land_segments/canopy/h_max_canopy',
                     '/land_segments/canopy/h_mean_canopy','/land_segments/canopy/h_min_canopy','/land_segments/canopy/landsat_flag',
@@ -796,11 +800,14 @@ def HDF5_data_subset(ROI_file,input_file,output_directory,data_group ='',layerSu
         if file_ext=='json':
             output_file=output_directory+'/'+file1Name+'.json'
             outDF.to_file(output_file, driver='GeoJSON')
+        elif file_ext=='csv':
+            output_file=output_directory+'/'+file1Name+'.csv'
+            outDF.to_csv(output_file,  index=False)            
         else:
             output_file=output_directory+'/'+file1Name+'.shp'
             outDF.to_file(output_file)
     except ValueError:
-        print("Make sure the file extension is shp or json")
+        print("Make sure the file extension is shp, json, or csv")
 
 """
 Worflow functions for parallel process
@@ -831,18 +838,18 @@ def HDF5_subset_workflow(q):
 def per_file_workflow(q):
     while not q.empty():
         try:
-            f, temporary_directory, output_directory, ROI_file, data_group = q.get()
+            f, temporary_directory, output_directory, ROI_file, data_group, extension = q.get()
             fileName = os.path.join(temporary_directory, f.split('/')[-1].strip())
             #Check if the file has already been downloaded
             if not os.path.isfile(fileName):
                 earthdata_download(f, temporary_directory)
             #Check if the file has already been processed
-            SHPfileName = os.path.join(output_directory, re.sub('h5', 'shp', f.split('/')[-1].strip(),flags=re.IGNORECASE))
+            SHPfileName = os.path.join(output_directory, re.sub('h5', extension, f.split('/')[-1].strip(),flags=re.IGNORECASE))
             if not os.path.isfile(SHPfileName): 
                 old_stdout=sys.stdout
                 message=StringIO()
                 sys.stdout=message
-                HDF5_data_subset(ROI_file,fileName,output_directory, data_group)
+                HDF5_data_subset(ROI_file,fileName,output_directory, data_group, file_ext=extension)
                 sys.stdout=old_stdout
                 if re.search("no shots intersect", message.getvalue()) or re.search("does not have points intersecting", message.getvalue()):
                     os.remove(fileName)
@@ -878,10 +885,10 @@ def parallel_subset(input_files,ROI_file,output_directory2,data_group,num_worker
         workers.close()
         workers.join()
         
-def parallel_workflow_per_file(available_files, temporary_directory2, ROI_file, output_directory2, data_group, num_workers):
+def parallel_workflow_per_file(available_files, temporary_directory2, ROI_file, output_directory2, data_group, num_workers, extension):
     q= Queue()
     for f in available_files:
-        q.put((f, temporary_directory2, output_directory2, ROI_file, data_group)) 
+        q.put((f, temporary_directory2, output_directory2, ROI_file, data_group, extension)) 
     workers = Pool(num_workers, per_file_workflow,(q,), maxtasksperchild=5)
     workers.close()
     workers.join()
