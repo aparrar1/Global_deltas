@@ -16,10 +16,14 @@ The data_group for GEDI are any of the BEAM names ['BEAM0000', 'BEAM0001', 'BEAM
 GEDI L2A files have 765 science dataset layers per beam. The default layer list only includes 26 layers. 
 GEDI L2B files have 251 science dataset layers per beam. The default layer list only includes 38 layers. 
 The approximate pixel size for this GEDI data is 25 m. 
+
+
 #ICESat GLAS data
 GLAS/ICEsat L2 Global Land Surface Altimetry Data short name is GLAH14, the latest version for this product is version 034
 The data_group for GLAS are the HZ groups ['Data_1HZ', 'Data_40HZ']
 The approximate pixel size for this ICESat data is 65 m.
+
+
 #ICESat2 ATLAS L8 data
 ICESat2 ATLAS L3A Land and Vegetation Height short name is ATL08, the latest version for this product is version 004.
 The data_group for ATLAS are any of the ground tracks names ['gt1l', 'gt1r', 'gt2l','gt2r','gt3l','gt3r']
