@@ -16,16 +16,20 @@ GEDI L2 Elevation and Height Metrics Data short name is GEDI02_A and GEDI02_B. t
 - The data_group for GEDI are any of the BEAM names ['BEAM0000', 'BEAM0001', 'BEAM0010', 'BEAM0011', 'BEAM0101', 'BEAM0110', 'BEAM1000', 'BEAM1011']
 - GEDI L2A files have 765 science dataset layers per beam. The default layer list only includes 26 layers. 
 - GEDI L2B files have 251 science dataset layers per beam. The default layer list only includes 38 layers. 
-- The approximate pixel size for this GEDI data is 25 m. 
+- The approximate footprint size for this GEDI data is 25 m. 
 
 ### ICESat GLAS data
 GLAS/ICEsat L2 Global Land Surface Altimetry Data short name is GLAH14, the latest version for this product is version 034
 - The data_group for GLAS are the HZ groups ['Data_1HZ', 'Data_40HZ']
-- The approximate pixel size for this ICESat data is 65 m.
-
+- The approximate footprint size for this ICESat data is 65 m.
 
 ### ICESat2 ATLAS L8 data
-ICESat2 ATLAS L3A Land and Vegetation Height short name is ATL08, the latest version for this product is version 004.
-- The data_group for ATLAS are any of the ground tracks names ['gt1l', 'gt1r', 'gt2l','gt2r','gt3l','gt3r']
-- The approximate pixel size for this ICESat2 data is 100 m
+ICESat2 ATLAS L3A Land and Vegetation Height short name is ATL08, the latest version for this product is version 005.
+- The data_group for ATLAS08 are any of the ground tracks names ['gt1l', 'gt1r', 'gt2l','gt2r','gt3l','gt3r']
+- The approximate footprint for this ICESat2 data is 100 m
+
+### ICESat2 ATLAS L2A data
+ICESat2 ATLAS L2A Global Geolocated Photon Data short name is ATL03, the latest version for this product is version 005.
+- The data_group for ATLAS03 are any of the ground tracks names ['gt1l', 'gt1r', 'gt2l','gt2r','gt3l','gt3r']
+- The approximate footprint size for this ICESat2 data is 0.7 m
 
