@@ -32,19 +32,19 @@ sys.path.append('/Users/asparra/Documents/Global_deltas/code')#Change the direct
 import Satelite_LIDAR_download_subset as dpf
   
 #Set the high level directories, the number of workers, and the file extension (shp, json, or csv) 
-output_dir='/Users/asparra/Documents/Global_deltas/data/'
-temporary_dir='/Volumes/Fortress_L3/'
-NUM_WORKERS = 5
+output_dir='/Users/asparra/Documents/Global_deltas/data/' #Directory for the processed data
+temporary_dir='/Volumes/Fortress_L3/' #Directory for downloading the files
+NUM_WORKERS = 3
 extension='csv'
 
 #get the ROI shapefiles for each delta and loop through each one 
-ROI_shapefiles=['/Users/asparra/Documents/Global_deltas/data/Shapefiles/DeltaSHPs/global_map_VistulaBuff5km.shp']
+ROI_shapefiles=['/Users/asparra/Documents/Global_deltas/data/Shapefiles/extents/Fly.shp']
 
 if __name__ == '__main__':
     for i in ROI_shapefiles:
         delta_name=re.split(".shp", i.split("/")[-1])[0]
         #Modify this part of the code depending on the name of your file.
-        delta_name=re.sub('global_map_|Buff5km', '', delta_name)
+        #delta_name=re.sub('global_map_|Buff5km', '', delta_name)
         output_directory=output_dir + delta_name
         #Modify the file_types depending on the dataset you want to download
         file_types = {"GEDI": ['GEDI02_B', '002', 'gedib_query',['BEAM0000', 'BEAM0001', 'BEAM0010', 'BEAM0011', 'BEAM0101', 'BEAM0110', 'BEAM1000', 'BEAM1011']],
