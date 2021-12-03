@@ -24,7 +24,7 @@ import Global_surface_water_download as gsw
 Filtering data points to select only information corresponding to water surface elevation
 """
 
-def water_surface_filtering(roi_shp, input_file, elevation_threshold=50, overwrite=False, aditional_columns=None, extension='csv'):
+def water_surface_filtering(roi_shp, input_file, elevation_threshold=None, overwrite=False, aditional_columns=None, extension='csv'):
 #Check that the input file and roi shp exists
     if not os.path.isfile(roi_shp):    
         print('error: ROI shpefile provided does not exist or was not found')
@@ -48,7 +48,8 @@ def water_surface_filtering(roi_shp, input_file, elevation_threshold=50, overwri
         filtered_data=filtered_data[filtered_data.noDetctMod==1] #Chose only the points with one detected Mode             
         filtered_data=filtered_data[filtered_data.degradeFlg==0] #Remove points with degrade conditions
         #Remove possible outliers above the defined elevation threshold.
-        filtered_data=filtered_data[filtered_data.elevLowMod<elevation_threshold]
+        if elevation_threshold!= None:
+            filtered_data=filtered_data[filtered_data.elevLowMod<elevation_threshold]
         #Select only the relevant columns  
         column_subset=['FILE','BEAM','shot_no','Lat','Lon','time','elevLowMod','DEM','l2b_QF','landsatTC','landsat_WP','urbanProp','surfFl','solarElev','geometry']
         if aditional_columns is not None:
@@ -78,7 +79,8 @@ def water_surface_filtering(roi_shp, input_file, elevation_threshold=50, overwri
             #calculate the final elevation values
             filtered_data.d_elev[:]=filtered_data.d_elev[:]+filtered_data.satElevCor[:]+filtered_data.ElevBiasCo[:]-filtered_data.deltaEllip[:]
             #Remove possible outliers above the defined elevation threshold.
-            filtered_data=filtered_data[filtered_data.d_elev<elevation_threshold]
+            if elevation_threshold!= None:
+                filtered_data=filtered_data[filtered_data.d_elev<elevation_threshold]
             #Change the SRMT DEM values from TOPEX/Poseidon ellipsoid to WGS84 ellipsoid.
             filtered_data.d_DEM_elv[:]=filtered_data.d_DEM_elv[:]-filtered_data.deltaEllip[:]
             column_subset=['FILE','id','Lat','Lon','time','d_elev','d_DEM_elv','deltaEllip','geometry']     
@@ -96,7 +98,8 @@ def water_surface_filtering(roi_shp, input_file, elevation_threshold=50, overwri
             filtered_data=atlas_file[atlas_file.podppdFlg==0] #Filter acording to the Composite POD/PPD flag that indicates the quality of input geolocation products for the specific ATL03 segment.
             filtered_data=filtered_data[filtered_data.sc_orient<2]#filter tracks adquired when the spacecraft was in transition. Science quality is potentially degraded while in transition mode.
             #Remove possible outliers above the defined elevation threshold.
-            filtered_data=filtered_data[filtered_data.h_ph<elevation_threshold]
+            if elevation_threshold!= None:
+                filtered_data=filtered_data[filtered_data.h_ph<elevation_threshold]
             column_subset=['FILE','group','chanel', 'count', 'pulse','ph_ndx','Lat','Lon','time','h_ph','dem_h','solarElev','sc_orient','geometry']
         if 'ATLAS08' in input_file:
             #Check if the water_filtered points file already exists
@@ -115,7 +118,8 @@ def water_surface_filtering(roi_shp, input_file, elevation_threshold=50, overwri
             filtered_data=filtered_data[filtered_data.msw_flag==0]
             filtered_data=filtered_data[filtered_data.msw_flag==0]
             #Remove possible outliers above the defined elevation threshold.
-            filtered_data=filtered_data[filtered_data.h_best_fit<elevation_threshold]
+            if elevation_threshold!= None:
+                filtered_data=filtered_data[filtered_data.h_best_fit<elevation_threshold]
             column_subset=['FILE','group','Lat','Lon','time','h_best_fit','dem_h','night_flag','snr','urban_flag','seg_snowcv','geometry']
         if aditional_columns is not None:
             aditional_columns = [x for x in aditional_columns if x not in column_subset] #Make sure the column is not repeated
